@@ -14,7 +14,7 @@ class Message:
             self.message_type = 'note_on'
         elif self.raw.startswith('note_off'):
             self.message_type = 'note_off'
-        elif '<meta message' in self.raw:
+        elif 'meta' in self.raw:
             self.message_type = 'meta'
         else:
             self.message_type = 'other'
@@ -36,8 +36,12 @@ class Message:
     def __str__(self):
         return f"{self.message_type}"
 
+    def __repr__(self):
+        return f"{self.message_type}"
 
-def get_messages(mid: MidiFile, ignore: list = None) -> list:
+
+
+def get_messages(mid: MidiFile) -> list:
     messages = []
     for msg in mid.tracks[1]:
         messages.append(str(msg))
@@ -57,20 +61,28 @@ def create_stepmap(messages: list) -> dict:
 
     return steps
 
+def create_steplist(messages: list) -> list:
+    filter = ['meta']
+    steplist = [Message(m, filtered_message_types=filter) for m in messages]
+    return [m for m in steplist if not m.filtered]
 
-message_list = get_messages(ON_OFF)
-stepmap = create_stepmap(message_list)
-
-for k, v in stepmap.items():
-    if not v.filtered:
-        try:
-            next_step_message: Message = stepmap[k + 1]
-
-            if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
-                print('blank')
-            else:
-                print(v.message_type, v.params['note'])
-        except KeyError:
-            break
+if __name__ == '__main__':
 
 
+    message_list = get_messages(ON_OFF)
+    stepmap = create_stepmap(message_list)
+
+    for k, v in stepmap.items():
+        if not v.filtered:
+            try:
+                next_step_message: Message = stepmap[k + 1]
+
+                if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
+                    print('blank')
+                else:
+                    print(v.message_type, v.params['note'])
+            except KeyError:
+                break
+
+
+    print(stepmap)
