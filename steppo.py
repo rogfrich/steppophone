@@ -40,7 +40,6 @@ class Message:
         return f"{self.message_type}"
 
 
-
 def get_messages(mid: MidiFile) -> list:
     messages = []
     for msg in mid.tracks[1]:
@@ -61,14 +60,14 @@ def create_stepmap(messages: list) -> dict:
 
     return steps
 
+
 def create_steplist(messages: list) -> list:
     filter = ['meta']
     steplist = [Message(m, filtered_message_types=filter) for m in messages]
     return [m for m in steplist if not m.filtered]
 
+
 if __name__ == '__main__':
-
-
     message_list = get_messages(ON_OFF)
     stepmap = create_stepmap(message_list)
 
@@ -83,6 +82,5 @@ if __name__ == '__main__':
                     print(v.message_type, v.params['note'])
             except KeyError:
                 break
-
 
     print(stepmap)
