@@ -39,7 +39,7 @@ class Message:
     def __repr__(self):
         return f"{self.message_type}"
 
-
+#TODO - refactor so this takes a single track. Iterate over mid.tracks calling this
 def get_messages(mid: MidiFile) -> list:
     messages = []
     for msg in mid.tracks[1]:
