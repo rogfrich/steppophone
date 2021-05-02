@@ -1,3 +1,5 @@
+import datetime
+
 NOTE_MAP = {
     81: 0,   # A4
     82: 1,   # A#4
@@ -12,3 +14,6 @@ NOTE_MAP = {
     91: 10,  # G5
     92: 11,  # G#5
 }
+
+OUTPUT_FOLDER = '~/steppophone_output'
+OUTPUT_FILENAME = f"steppo_{datetime.datetime.now()}"
