@@ -1,5 +1,5 @@
 from typing import List
-from mido import MidiFile, MidiTrack, Message
+from mido import MidiFile, MidiTrack
 
 CMAJ_SCALE = MidiFile('./midi_files/cmaj_scale_C4toC5_60bpm.mid')
 ON_OFF = MidiFile('./midi_files/on_off.mid')
