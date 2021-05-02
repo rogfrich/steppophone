@@ -8,6 +8,9 @@ ONE_BEAT = 15360
 
 
 class Message:
+    """
+    Represents an individual MIDI message.
+    """
     def __init__(self, raw: str, filtered_message_types: list = None):
         self.raw = raw
         self.params = self.parse_message_for_params()
@@ -27,6 +30,9 @@ class Message:
             self.filtered = False
 
     def parse_message_for_params(self) -> dict:
+        """
+        Parameters for a given MIDI message are in one long string. Spilt them into something usable.
+        """
         params = {}
         split_message = self.raw.split()
         for i in split_message:
@@ -50,8 +56,10 @@ def get_tracks(mid: MidiFile) -> list[MidiTrack]:
     return [track for track in mid.tracks if 'Transport' not in str(track)]
 
 
-# TODO - refactor so this takes a single track. Iterate over mid.tracks calling this
 def get_messages(track: MidiTrack) -> List[str]:
+    """
+    Take a single track and extract the MIDI messages from it.
+    """
     messages = []
     for msg in track:
         messages.append(str(msg))
@@ -60,8 +68,12 @@ def get_messages(track: MidiTrack) -> List[str]:
 
 
 def create_stepmap(messages: list) -> dict:
+    """
+    Create a stepmap that contains only the events we need (no meta events).
+    """
     index = 0
     steps = {}
+
     for msg in messages:
         filtered = ['meta']
         this_message = Message(msg, filtered_message_types=filtered)
@@ -71,11 +83,6 @@ def create_stepmap(messages: list) -> dict:
 
     return steps
 
-
-def create_steplist(messages: list) -> list:
-    filter = ['meta']
-    steplist = [Message(m, filtered_message_types=filter) for m in messages]
-    return [m for m in steplist if not m.filtered]
 
 
 if __name__ == '__main__':
