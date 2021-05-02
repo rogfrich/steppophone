@@ -1,7 +1,9 @@
-from mido import MidiFile
+from typing import List
+from mido import MidiFile, MidiTrack
 
 CMAJ_SCALE = MidiFile('./midi_files/cmaj_scale_C4toC5_60bpm.mid')
 ON_OFF = MidiFile('./midi_files/on_off.mid')
+TWO_TRACKS = MidiFile('./midi_files/2_tracks.mid')
 ONE_BEAT = 15360
 
 
@@ -39,10 +41,19 @@ class Message:
     def __repr__(self):
         return f"{self.message_type}"
 
-#TODO - refactor so this takes a single track. Iterate over mid.tracks calling this
-def get_messages(mid: MidiFile) -> list:
+
+def get_tracks(mid: MidiFile) -> list[MidiTrack]:
+    """
+    Extract the individual tracks from the MIDI file, not including the transport track
+    which isn't needed.
+    """
+    return [track for track in mid.tracks if 'Transport' not in str(track)]
+
+
+# TODO - refactor so this takes a single track. Iterate over mid.tracks calling this
+def get_messages(track: MidiTrack) -> List[str]:
     messages = []
-    for msg in mid.tracks[1]:
+    for msg in track:
         messages.append(str(msg))
 
     return messages
@@ -68,19 +79,23 @@ def create_steplist(messages: list) -> list:
 
 
 if __name__ == '__main__':
-    message_list = get_messages(ON_OFF)
-    stepmap = create_stepmap(message_list)
+    track_list = get_tracks(TWO_TRACKS)
+    print(track_list)
+    for track in track_list:
+        message_list = get_messages(track)
+        stepmap = create_stepmap(message_list)
 
-    for k, v in stepmap.items():
-        if not v.filtered:
-            try:
-                next_step_message: Message = stepmap[k + 1]
+        for k, v in stepmap.items():
+            if not v.filtered:
+                try:
+                    next_step_message: Message = stepmap[k + 1]
 
-                if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
-                    print('blank')
-                else:
-                    print(v.message_type, v.params['note'])
-            except KeyError:
-                break
+                    if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
+                        print('blank')
+                    elif v.message_type == 'note_on':
+                        print(v.message_type, v.params['note'])
+                except KeyError:
+                    break
 
-    print(stepmap)
+        print('-' * 80)
+
