@@ -1,0 +1,17 @@
+;this is a comment
+#define NUMNOTES <number of notes/blanks in the track>
+;voice 1
+72,74,75,77,72,74,75,77,
+72,74,75,77,72,74,75,77,
+;voice 2
+72,74,75,77,72,74,75,77,
+72,74,75,77,72,74,75,77,
+
+
+
+
+
+
+0 = blank
+eighth notes, not quarter notes
+last row should not have a trailing comma
