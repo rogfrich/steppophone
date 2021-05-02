@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
                     if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
                         print('blank')
-                    else:
+                    elif v.message_type == 'note_on':
                         print(v.message_type, v.params['note'])
                 except KeyError:
                     break
