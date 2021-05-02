@@ -75,5 +75,8 @@ def test_create_stepmap():
     assert stepmap[0].message_type == 'note_on'
     assert stepmap[7].message_type == 'note_off'
 
+def test_get_tracks():
+    pass
+
 
 
