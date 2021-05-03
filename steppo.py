@@ -58,6 +58,7 @@ class Output:
     def __init__(self):
         self.text: str = ""
         self.track_count: int = 0
+        self.total_message_count: int = 0
 
     def update_text(self, stepmap):
         """
@@ -68,8 +69,7 @@ class Output:
             self.text += f"\nvoice {self.track_count}\n"
         else:
             self.text += f"voice {self.track_count}\n"
-        # if self.track_count > 1:
-        #     self.text += '\n'
+
         row = ""
 
         for step, message in stepmap.items():
@@ -87,6 +87,7 @@ class Output:
                         row += '0,'
 
                     self.text += row
+
 
     def strip_final_comma(self):
         """
@@ -128,16 +129,12 @@ def create_stepmap(messages: list) -> dict:
             steps[index] = this_message
             index += 1
 
+
     return steps
 
 
-def create_output(stepmap: dict) -> str:
-    output = ""
-
-    return output
-
-
 if __name__ == '__main__':
+    total_message_count = 0
     track_list = get_tracks(TWO_TRACKS)
     print(track_list)
     o = Output()
@@ -147,3 +144,4 @@ if __name__ == '__main__':
         o.update_text(stepmap)
     o.strip_final_comma()
     print(o.text)
+    print(total_message_count)

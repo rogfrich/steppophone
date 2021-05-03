@@ -85,5 +85,5 @@ def test_create_stepmap():
     assert stepmap[0].message_type == 'note_on'
     assert stepmap[7].message_type == 'note_off'
 
-
+#TODO write test cases for the Output class
 
