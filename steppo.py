@@ -83,7 +83,19 @@ def create_stepmap(messages: list) -> dict:
 
     return steps
 
-
+def create_output(stepmap: dict) -> str:
+    output = ""
+    for step, message in stepmap.items():
+        if not message.filtered:
+            try:
+                next_step_message: Message = stepmap[step + 1]
+                if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
+                    output += '0,'
+                elif message.message_type == 'note_on':
+                    output += f"{message.params['note']},"
+            except KeyError:
+                break
+    return output
 
 if __name__ == '__main__':
     track_list = get_tracks(TWO_TRACKS)
@@ -91,18 +103,17 @@ if __name__ == '__main__':
     for track in track_list:
         message_list = get_messages(track)
         stepmap = create_stepmap(message_list)
+        #
+        # for k, v in stepmap.items():
+        #     if not v.filtered:
+        #         try:
+        #             next_step_message: Message = stepmap[k + 1]
+        #
+        #             if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
+        #                 print('blank')
+        #             elif v.message_type == 'note_on':
+        #                 print(v.message_type, v.params['note'])
+        #         except KeyError:
+        #             break
 
-        for k, v in stepmap.items():
-            if not v.filtered:
-                try:
-                    next_step_message: Message = stepmap[k + 1]
-
-                    if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
-                        print('blank')
-                    elif v.message_type == 'note_on':
-                        print(v.message_type, v.params['note'])
-                except KeyError:
-                    break
-
-        print('-' * 80)
-
+        print(create_output(stepmap))
