@@ -1,5 +1,5 @@
 ;this is a comment
-#define NUMNOTE S <number of notes/blanks in the track>
+#define NUMNOTES <number of notes/blanks in the track>
 ;voice 1
 72,74,75,77,72,74,75,77,
 72,74,75,77,72,74,75,77,

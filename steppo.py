@@ -1,5 +1,6 @@
 from typing import List
 from mido import MidiFile, MidiTrack
+from settings import NOTES_PER_ROW
 
 CMAJ_SCALE = MidiFile('./midi_files/cmaj_scale_C4toC5_60bpm.mid')
 ON_OFF = MidiFile('./midi_files/on_off.mid')
@@ -11,6 +12,7 @@ class Message:
     """
     Represents an individual MIDI message.
     """
+
     def __init__(self, raw: str, filtered_message_types: list = None):
         self.raw = raw
         self.params = self.parse_message_for_params()
@@ -48,6 +50,51 @@ class Message:
         return f"{self.message_type}"
 
 
+class Output:
+    """
+    Represents the output that will be written to a file
+    """
+
+    def __init__(self):
+        self.text: str = ""
+        self.track_count: int = 0
+
+    def update_text(self, stepmap):
+        """
+        Takes a stepmap and renders it as a string, adding it to the output text.
+        """
+        self.track_count += 1
+        if self.track_count > 1:
+            self.text += f"\nvoice {self.track_count}\n"
+        else:
+            self.text += f"voice {self.track_count}\n"
+        # if self.track_count > 1:
+        #     self.text += '\n'
+        row = ""
+
+        for step, message in stepmap.items():
+            if not message.filtered:
+                try:
+                    next_step_message: Message = stepmap[step + 1]
+                    if next_step_message.message_type == 'note_on' and int(
+                            next_step_message.params['time']) == ONE_BEAT:
+                        row += '0,'
+                    elif message.message_type == 'note_on':
+                        row += f"{message.params['note']},"
+                except KeyError:  # Reached the end
+                    # Make sure that final blank notes are correctly shown
+                    if len(row.rstrip(',').split(',')) == NOTES_PER_ROW - 1:
+                        row += '0,'
+
+                    self.text += row
+
+    def strip_final_comma(self):
+        """
+        The steppophone output format specifies no final comma
+        """
+        self.text = self.text.rstrip(',')
+
+
 def get_tracks(mid: MidiFile) -> list[MidiTrack]:
     """
     Extract the individual tracks from the MIDI file, not including the transport track
@@ -83,37 +130,20 @@ def create_stepmap(messages: list) -> dict:
 
     return steps
 
+
 def create_output(stepmap: dict) -> str:
     output = ""
-    for step, message in stepmap.items():
-        if not message.filtered:
-            try:
-                next_step_message: Message = stepmap[step + 1]
-                if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
-                    output += '0,'
-                elif message.message_type == 'note_on':
-                    output += f"{message.params['note']},"
-            except KeyError:
-                break
+
     return output
+
 
 if __name__ == '__main__':
     track_list = get_tracks(TWO_TRACKS)
     print(track_list)
+    o = Output()
     for track in track_list:
         message_list = get_messages(track)
         stepmap = create_stepmap(message_list)
-        #
-        # for k, v in stepmap.items():
-        #     if not v.filtered:
-        #         try:
-        #             next_step_message: Message = stepmap[k + 1]
-        #
-        #             if next_step_message.message_type == 'note_on' and int(next_step_message.params['time']) == ONE_BEAT:
-        #                 print('blank')
-        #             elif v.message_type == 'note_on':
-        #                 print(v.message_type, v.params['note'])
-        #         except KeyError:
-        #             break
-
-        print(create_output(stepmap))
+        o.update_text(stepmap)
+    o.strip_final_comma()
+    print(o.text)

@@ -17,3 +17,6 @@ NOTE_MAP = {
 
 OUTPUT_FOLDER = '~/steppophone_output'
 OUTPUT_FILENAME = f"steppo_{datetime.datetime.now()}"
+OUTPUT_HEADER = ""
+
+NOTES_PER_ROW = 8
