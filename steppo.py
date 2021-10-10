@@ -5,7 +5,8 @@ from settings import NOTES_PER_ROW
 CMAJ_SCALE = MidiFile('./midi_files/cmaj_scale_C4toC5_60bpm.mid')
 ON_OFF = MidiFile('./midi_files/on_off.mid')
 TWO_TRACKS = MidiFile('./midi_files/2_tracks.mid')
-ONE_BEAT = 15360
+ONE_BEAT = 7680
+JINGLE_TEST = MidiFile('./midi_files/jingle2021v2.mid')
 
 
 class Message:
@@ -135,8 +136,7 @@ def create_stepmap(messages: list) -> dict:
 
 if __name__ == '__main__':
     total_message_count = 0
-    track_list = get_tracks(TWO_TRACKS)
-    print(track_list)
+    track_list = get_tracks(JINGLE_TEST)
     o = Output()
     for track in track_list:
         message_list = get_messages(track)
@@ -144,4 +144,6 @@ if __name__ == '__main__':
         o.update_text(stepmap)
     o.strip_final_comma()
     print(o.text)
-    print(total_message_count)
+    with open('/Users/rich/jingle2021.txt', 'w') as fout:
+        fout.write(o.text)
+
