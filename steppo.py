@@ -141,8 +141,9 @@ if __name__ == '__main__':
     for track in track_list:
         message_list = get_messages(track)
         stepmap = create_stepmap(message_list)
+        print(len(stepmap))
         o.update_text(stepmap)
-    o.strip_final_comma()
+        o.strip_final_comma()
     print(o.text)
     with open('/Users/rich/jingle2021.txt', 'w') as fout:
         fout.write(o.text)
